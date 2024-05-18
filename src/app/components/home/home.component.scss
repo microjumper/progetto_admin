@@ -1,1 +1,13 @@
+/* Styles for large screens */
+@media screen and (min-width: 768px) {
+  .content {
+    margin-left: 280px;
+  }
+}
 
+/* Styles for small screens */
+@media screen and (max-width: 768px) {
+  .content {
+    margin-left: 0;
+  }
+}

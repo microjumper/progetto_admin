@@ -1,1 +1,9 @@
-<full-calendar [options]="calendarOptions"></full-calendar>
+<div class="container">
+  <p-sidebar [visible]="sidebarVisible" [modal]="sidebarModal" showCloseIcon="false">
+    <h3>Sidebar</h3>
+  </p-sidebar>
+
+  <div class="content">
+    <app-calendar></app-calendar>
+  </div>
+</div>
