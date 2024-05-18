@@ -1,1 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Set font family to Roboto for FullCalendar components */
+.fc, .fc-button {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Set font family to Roboto for header toolbar */
+.fc-header-toolbar {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Set font family to Roboto for event titles */
+.fc-event-title {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Set font family to Roboto for event details */
+.fc-event-time, .fc-event-location {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Set font family to Roboto for day, week, and month headers */
+.fc-daygrid-day-number, .fc-timegrid-col-text, .fc-day-header, .fc-col-header-cell-cushion, .fc-col-header-cell {
+  font-family: 'Roboto', sans-serif;
+}
