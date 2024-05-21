@@ -1,6 +1,5 @@
-.sidebar {
-  display: block;
-  width: 280px;
+.content {
+  margin-left: 320px;
 }
 
 #external-events {
@@ -23,18 +22,4 @@
 
 .fc-event:hover {
   background-color: rgba(55, 136, 216, 0.8);
-}
-
-/* Styles for large screens */
-@media screen and (min-width: 768px) {
-  .content {
-    margin-left: 320px;
-  }
-}
-
-/* Styles for small screens */
-@media screen and (max-width: 768px) {
-  .content {
-    margin-left: 0;
-  }
 }
