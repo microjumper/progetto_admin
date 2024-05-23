@@ -6,7 +6,7 @@ import { CalendarOptions, DateSelectArg, EventApi, EventClickArg } from "@fullca
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list';
-import interactionPlugin, { Draggable, EventReceiveArg } from '@fullcalendar/interaction';
+import interactionPlugin, { EventReceiveArg } from '@fullcalendar/interaction';
 
 import itLocale from '@fullcalendar/core/locales/it';
 
@@ -19,7 +19,7 @@ import itLocale from '@fullcalendar/core/locales/it';
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss'
 })
-export class CalendarComponent implements AfterViewInit{
+export class CalendarComponent {
 
   calendarOptions: CalendarOptions | undefined;
 
@@ -27,14 +27,10 @@ export class CalendarComponent implements AfterViewInit{
     this.initCalendar();
   }
 
-  ngAfterViewInit(): void {
-    this.initExternalEventsDraggable();
-  }
-
   private initCalendar(): void {
     this.calendarOptions = {
       locale: itLocale,
-      initialView: 'listWeek',
+      initialView: 'timeGridDay',
       selectable: true,
       editable: true,
       droppable: true,
@@ -62,25 +58,8 @@ export class CalendarComponent implements AfterViewInit{
       eventClick: clickInfo => this.handleClick(clickInfo),
       eventsSet: events => this.handleSet(events),
       eventReceive: info => this.handleReceive(info),
-      drop: dropArg => console.log(dropArg)
+      drop: dropArg => this.handleDrop(dropArg)
     };
-  }
-
-  private initExternalEventsDraggable(): void {
-    const externalEventsElement = document.getElementById('external-events');
-    if (externalEventsElement) {
-      const externalEvents = new Draggable(externalEventsElement, {
-        itemSelector: '.fc-event',
-        eventData: (eventEl) => {
-          const title = eventEl.innerText.trim();
-          console.info(`Dragging ${title}`);
-          return { title };
-        }
-      });
-    }
-    else {
-      console.error("External events container not found.");
-    }
   }
 
   private handleSelect(selectInfo: DateSelectArg) {
@@ -105,11 +84,31 @@ export class CalendarComponent implements AfterViewInit{
   }
 
   private handleSet(events: EventApi[]) {
+    // handle appointment repositioning
     console.log(events);
+
+    events.forEach((event) => {
+      const startDate = event.start;
+      const endDate = event.end;
+
+      console.log("Event start date:", startDate);
+      console.log("Event end date:", endDate);
+    });
   }
 
   private handleReceive(info: EventReceiveArg): void
   {
-    console.log(info)
+    const event =  info.event;
+
+    console.log(event.title)
+    console.log(event.startStr)
+    console.log(event.endStr)
+    console.log(event.allDay)
+    console.log(event.url)
+  }
+
+  private handleDrop(dropInfo: any): void
+  {
+    //console.log(dropInfo)
   }
 }

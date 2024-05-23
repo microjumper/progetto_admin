@@ -2,9 +2,7 @@
   <p-sidebar class="sidebar" [visible]="true" [modal]="false" [showCloseIcon]="false">
     <h3>Appointment Scheduler</h3>
 
-    <div id="external-events">
-      <div class="fc-event" *ngFor="let service of legalServices">{{ service.name }}</div>
-    </div>
+    <app-draggable [events]="legalServices"></app-draggable>
   </p-sidebar>
 
   <div class="content">

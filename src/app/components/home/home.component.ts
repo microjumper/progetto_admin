@@ -6,6 +6,7 @@ import { SidebarModule } from "primeng/sidebar";
 import { CalendarComponent } from "../calendar/calendar.component";
 import { AppointmentService } from "../../services/appointment/appointment.service";
 import { LegalService } from "../../../../progetto_shared/legalService.type";
+import { DraggableComponent } from "../draggable/draggable.component";
 
 @Component({
   selector: 'app-home',
@@ -13,7 +14,8 @@ import { LegalService } from "../../../../progetto_shared/legalService.type";
   imports: [
     SidebarModule,
     CalendarComponent,
-    NgForOf
+    NgForOf,
+    DraggableComponent
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
