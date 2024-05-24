@@ -1,4 +1,4 @@
-import { AfterViewInit, Component } from '@angular/core';
+import { Component } from '@angular/core';
 
 import { FullCalendarModule } from "@fullcalendar/angular";
 import { CalendarOptions, DateSelectArg, EventApi, EventClickArg } from "@fullcalendar/core";
@@ -9,6 +9,8 @@ import listPlugin from '@fullcalendar/list';
 import interactionPlugin, { EventReceiveArg } from '@fullcalendar/interaction';
 
 import itLocale from '@fullcalendar/core/locales/it';
+
+import { EventService } from "../../services/event/event.service";
 
 @Component({
   selector: 'app-calendar',
@@ -23,7 +25,9 @@ export class CalendarComponent {
 
   calendarOptions: CalendarOptions | undefined;
 
-  constructor() {
+  private events: EventApi[] = [];
+
+  constructor(private eventService: EventService) {
     this.initCalendar();
   }
 
@@ -54,11 +58,20 @@ export class CalendarComponent {
           duration: { weeks: 1 }
         }
       },
+      events: 'http://localhost:7071/api/events/all',
+      eventDataTransform: eventData => {
+        for (let prop in eventData) {
+          if (eventData[prop] === null) {
+            delete eventData[prop];
+          }
+        }
+        return eventData
+      },
       select: selectInfo => this.handleSelect(selectInfo),
       eventClick: clickInfo => this.handleClick(clickInfo),
       eventsSet: events => this.handleSet(events),
       eventReceive: info => this.handleReceive(info),
-      drop: dropArg => this.handleDrop(dropArg)
+      eventDrop: eventDropInfo => this.handleDrop(eventDropInfo)
     };
   }
 
@@ -80,12 +93,15 @@ export class CalendarComponent {
   }
 
   private handleClick(clickInfo: EventClickArg) {
-    console.log(clickInfo.event);
+    clickInfo.jsEvent.preventDefault();
+
+    if (clickInfo.event.url) {
+      window.open(clickInfo.event.url);
+    }
   }
 
   private handleSet(events: EventApi[]) {
-    // handle appointment repositioning
-    console.log(events);
+/*    console.log(events);
 
     events.forEach((event) => {
       const startDate = event.start;
@@ -93,22 +109,23 @@ export class CalendarComponent {
 
       console.log("Event start date:", startDate);
       console.log("Event end date:", endDate);
-    });
+    });*/
   }
 
   private handleReceive(info: EventReceiveArg): void
   {
-    const event =  info.event;
+    const event = info.event;
 
-    console.log(event.title)
-    console.log(event.startStr)
-    console.log(event.endStr)
-    console.log(event.allDay)
-    console.log(event.url)
+    this.eventService.addEvent(event).subscribe(
+      (response) => {
+        console.log(response);
+      })
   }
 
-  private handleDrop(dropInfo: any): void
+  private handleDrop(eventDropInfo: any): void
   {
-    //console.log(dropInfo)
+    console.log(eventDropInfo.event)
+
+    // update event in database
   }
 }

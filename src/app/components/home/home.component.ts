@@ -4,7 +4,7 @@ import { NgForOf } from "@angular/common";
 import { SidebarModule } from "primeng/sidebar";
 
 import { CalendarComponent } from "../calendar/calendar.component";
-import { AppointmentService } from "../../services/appointment/appointment.service";
+import { EventService } from "../../services/event/event.service";
 import { LegalService } from "../../../../progetto_shared/legalService.type";
 import { DraggableComponent } from "../draggable/draggable.component";
 
@@ -24,10 +24,10 @@ export class HomeComponent implements OnInit {
 
   legalServices: LegalService[] = [];
 
-  constructor(private appointmentService: AppointmentService) { }
+  constructor(private eventService: EventService) { }
 
   ngOnInit(): void {
-    this.appointmentService.getLegalServices().subscribe({
+    this.eventService.getLegalServices().subscribe({
       next: (legalServices) => {
         this.legalServices = legalServices;
       },

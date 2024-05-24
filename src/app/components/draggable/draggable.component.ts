@@ -16,10 +16,8 @@ import { LegalService } from "../../../../progetto_shared/legalService.type";
 })
 export class DraggableComponent implements AfterViewInit {
 
-  @Input() events: LegalService[] | undefined;
+  @Input() legalServices: LegalService[] | undefined;
   @ViewChild('container', { static: true }) container: ElementRef | undefined;
-
-  protected readonly JSON = JSON;
 
   ngAfterViewInit() {
     const externalEvents = new Draggable(this.container?.nativeElement, {
@@ -39,5 +37,16 @@ export class DraggableComponent implements AfterViewInit {
         }
       }
     });
+  }
+
+  createStringifiedEventData(legalService : LegalService): string {
+    const eventData = {
+      title: legalService.title,
+      duration: legalService.duration,
+      extendedProps: {
+        legalService: legalService.id
+      }
+    }
+    return JSON.stringify(eventData);
   }
 }
