@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 import { FullCalendarModule } from "@fullcalendar/angular";
-import { CalendarOptions, DateSelectArg, EventApi, EventClickArg } from "@fullcalendar/core";
+import { CalendarOptions, EventApi, EventClickArg } from "@fullcalendar/core";
 
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from '@fullcalendar/timegrid'
@@ -25,8 +25,6 @@ export class CalendarComponent {
 
   calendarOptions: CalendarOptions | undefined;
 
-  private events: EventApi[] = [];
-
   constructor(private eventService: EventService) {
     this.initCalendar();
   }
@@ -35,6 +33,7 @@ export class CalendarComponent {
     this.calendarOptions = {
       locale: itLocale,
       initialView: 'timeGridDay',
+      nowIndicator: true,
       selectable: true,
       editable: true,
       droppable: true,
@@ -67,29 +66,11 @@ export class CalendarComponent {
         }
         return eventData
       },
-      select: selectInfo => this.handleSelect(selectInfo),
       eventClick: clickInfo => this.handleClick(clickInfo),
       eventsSet: events => this.handleSet(events),
       eventReceive: info => this.handleReceive(info),
       eventDrop: eventDropInfo => this.handleDrop(eventDropInfo)
     };
-  }
-
-  private handleSelect(selectInfo: DateSelectArg) {
-    const title = prompt('Please enter a new title for your event');
-    const calendarApi = selectInfo.view.calendar;
-
-    calendarApi.unselect();
-
-    if (title) {
-      calendarApi.addEvent({
-        id: "1",
-        title,
-        start: selectInfo.startStr,
-        end: selectInfo.endStr,
-        allDay: selectInfo.allDay
-      });
-    }
   }
 
   private handleClick(clickInfo: EventClickArg) {
