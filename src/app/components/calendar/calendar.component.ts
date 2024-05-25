@@ -73,6 +73,7 @@ export class CalendarComponent implements OnInit {
       selectable: true,
       editable: true,
       droppable: true,
+      allDaySlot: false,
       plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
       headerToolbar: {
         left: 'prev,next,today',
