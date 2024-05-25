@@ -1,6 +1,5 @@
-import { Component } from '@angular/core';
-
-import { FullCalendarModule } from "@fullcalendar/angular";
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FullCalendarComponent, FullCalendarModule } from "@fullcalendar/angular";
 import { CalendarOptions, EventApi, EventClickArg } from "@fullcalendar/core";
 
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -10,23 +9,60 @@ import interactionPlugin, { EventReceiveArg } from '@fullcalendar/interaction';
 
 import itLocale from '@fullcalendar/core/locales/it';
 
+import { ConfirmationService, MenuItem, MessageService } from "primeng/api";
+
 import { EventService } from "../../services/event/event.service";
+import { ContextMenu, ContextMenuModule } from "primeng/contextmenu";
+import { ToastModule } from "primeng/toast";
+import { ConfirmDialogModule } from "primeng/confirmdialog";
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
   imports: [
-    FullCalendarModule
+    FullCalendarModule,
+    ContextMenuModule,
+    ToastModule,
+    ConfirmDialogModule
   ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss'
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit {
+
+  @ViewChild(FullCalendarComponent) calendarComponent: FullCalendarComponent | undefined;
+  @ViewChild(ContextMenu) contextMenu: ContextMenu | undefined;
 
   calendarOptions: CalendarOptions | undefined;
+  contextMenuItems: MenuItem[] = [
+    { label: 'Edit', icon: 'pi pi-pencil', command: () => this.editEvent() },
+    { label: 'Delete', icon: 'pi pi-trash', command: () => this.deleteEvent() }
+  ];
+  eventClickedOn: EventApi | null = null;
 
-  constructor(private eventService: EventService) {
+  constructor(private eventService: EventService, private confirmationService: ConfirmationService, private messageService: MessageService) { }
+
+  ngOnInit(): void {
     this.initCalendar();
+  }
+
+  private editEvent() {
+    console.log("Edit event");
+  }
+
+  private deleteEvent() {
+    this.confirmationService.confirm({
+      message: 'Procedere con l\'eliminazione?',
+      header: 'Conferma Eliminazione',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon:"none",
+      rejectIcon:"none",
+      accept: () => {
+        this.eventClickedOn?.remove();
+        this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'Evento eliminato',  life: 3000 });
+      },
+      reject: () => this.eventClickedOn = null
+    });
   }
 
   private initCalendar(): void {
@@ -69,7 +105,7 @@ export class CalendarComponent {
       eventClick: clickInfo => this.handleClick(clickInfo),
       eventsSet: events => this.handleSet(events),
       eventReceive: info => this.handleReceive(info),
-      eventDrop: eventDropInfo => this.handleDrop(eventDropInfo)
+      eventDrop: eventDropInfo => this.handleDrop(eventDropInfo),
     };
   }
 
@@ -79,6 +115,9 @@ export class CalendarComponent {
     if (clickInfo.event.url) {
       window.open(clickInfo.event.url);
     }
+
+    this.eventClickedOn = clickInfo.event;
+    this.contextMenu?.show(clickInfo.jsEvent);
   }
 
   private handleSet(events: EventApi[]) {

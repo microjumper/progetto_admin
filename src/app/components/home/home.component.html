@@ -1,11 +1,46 @@
 <div class="container">
   <p-sidebar class="sidebar" [visible]="true" [modal]="false" [showCloseIcon]="false">
-    <h3>Appointment Scheduler</h3>
-
+    <h2>Servizi Legali</h2>
+    <div class="add-button-container">
+      <button pButton pRipple icon="pi pi-plus" size="small" #addButton (click)="showDialog(); addButton.blur()"></button>
+    </div>
     <app-draggable [legalServices]="legalServices"></app-draggable>
   </p-sidebar>
 
   <div class="content">
     <app-calendar></app-calendar>
   </div>
+</div>
+
+<div class="card flex justify-content-center">
+  <p-dialog header="Nuovo Servizio Legale" modal="true" [(visible)]="formDialogVisible" closeOnEscape="true"
+            dismissableMask="true" [style]="{ width: '25rem', height: '25rem' }" (onHide)="legalServiceForm.reset()">
+    <form [formGroup]="legalServiceForm" (ngSubmit)="onSubmit()" class="form-container">
+      <div class="p-field">
+        <p-floatLabel>
+          <input id="id" type="text" pInputText formControlName="id">
+          <label for="id">ID</label>
+        </p-floatLabel>
+      </div>
+
+      <div class="p-field">
+        <p-floatLabel>
+          <input id="title" type="text" pInputText formControlName="title">
+          <label for="title">Titolo</label>
+        </p-floatLabel>
+      </div>
+
+      <div class="p-field">
+        <p-floatLabel>
+          <p-inputMask id="duration" mask="99:99" formControlName="duration" placeholder="00:00" />
+          <label for="duration">Durata</label>
+        </p-floatLabel>
+        <small *ngIf="legalServiceForm.controls['duration']?.invalid" style="color: #d32f2f">
+          {{ 'Durata minima: 30 minuti' }}
+        </small>
+      </div>
+
+      <button [disabled]="legalServiceForm.invalid" pButton type="submit" label="Conferma"></button>
+    </form>
+  </p-dialog>
 </div>
