@@ -13,6 +13,7 @@ import { CheckboxModule } from "primeng/checkbox";
 import { Draggable } from "@fullcalendar/interaction";
 
 import { LegalService } from "../../../../progetto_shared/legalService.type";
+import { DataService } from "../../services/data/data.service";
 
 @Component({
   selector: 'app-draggable',
@@ -39,13 +40,11 @@ export class DraggableComponent implements AfterViewInit {
   @ViewChild('container', { static: true }) container: ElementRef | undefined;
 
   checkedLegalServices: string[] = [];
-
   formDialogVisible: boolean = false;
   legalServiceForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private dataService: DataService) {
     this.legalServiceForm = this.formBuilder.group({
-      id: ['', [Validators.required, Validators.minLength(3)]],
       title: ['', [Validators.required, Validators.minLength(3)]],
       duration: ['', [Validators.required, this.validateDuration]]
     });
@@ -85,19 +84,32 @@ export class DraggableComponent implements AfterViewInit {
   onSubmit(): void {
     if (this.legalServiceForm.valid) {
       const legalService: LegalService = {
-        id: this.legalServiceForm.value.id,
+        id: "0",
         title: this.legalServiceForm.value.title,
         duration: this.legalServiceForm.value.duration
       };
 
-      this.legalServices.push(legalService);
+      this.dataService.addLegalService(legalService).subscribe(
+        (response: LegalService) => {
+          this.legalServices.push(response)
+        }
+      );
 
       this.hideDialog();
     }
   }
 
-  deleteCheckedServices(): void {
-    this.legalServices = this.legalServices.filter(service => !this.checkedLegalServices.includes(service.id));
+  removeCheckedServices(): void {
+    this.dataService.deleteLegalServices(this.checkedLegalServices).subscribe({
+        next: (response: LegalService[]) => {
+          this.legalServices = this.legalServices.filter(service => !this.checkedLegalServices.includes(service.id));
+          this.checkedLegalServices = [];
+        },
+        error: (error) => {
+          console.error(error);
+        }
+      }
+    );
   }
 
   showDialog(): void {

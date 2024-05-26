@@ -2,14 +2,14 @@
 
 <div class="buttons-container">
   <button [disabled]="checkedLegalServices.length === 0" pButton pRipple class="p-button-danger" icon="pi pi-trash" size="small"
-          #deleteButton (click)="deleteCheckedServices(); deleteButton.blur()" raised="true"></button>
+          #deleteButton (click)="removeCheckedServices(); deleteButton.blur()" raised="true"></button>
 
   <button pButton pRipple icon="pi pi-plus" size="small" #addButton (click)="showDialog(); addButton.blur()" raised="true"></button>
 </div>
 
 <div id="fc-event-container" #container>
   <div class="draggable-container" *ngFor="let service of legalServices">
-    <p-checkbox [(ngModel)]="checkedLegalServices" name="checkedLegalServices" #checkbox [value]="service.id"/>
+    <p-checkbox [(ngModel)]="checkedLegalServices" name="checkedLegalServices" [value]="service.id"/>
     <div class="fc-event p-button p-button-raised" [attr.data-event]=createStringifiedEventData(service)>
       <p>{{ service.title }}</p>
     </div>
@@ -20,13 +20,6 @@
   <p-dialog header="Nuovo Servizio Legale" modal="true" [(visible)]="formDialogVisible" closeOnEscape="true"
             dismissableMask="true" [style]="{ width: '25rem', height: '25rem' }" (onHide)="legalServiceForm.reset()">
     <form [formGroup]="legalServiceForm" (ngSubmit)="onSubmit()" class="form-container">
-      <div class="p-field">
-        <p-floatLabel>
-          <input id="id" type="text" pInputText formControlName="id">
-          <label for="id">ID</label>
-        </p-floatLabel>
-      </div>
-
       <div class="p-field">
         <p-floatLabel>
           <input id="title" type="text" pInputText formControlName="title">

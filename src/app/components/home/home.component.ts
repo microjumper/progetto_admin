@@ -3,9 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { SidebarModule } from "primeng/sidebar";
 
 import { CalendarComponent } from "../calendar/calendar.component";
-import { EventService } from "../../services/event/event.service";
+
 import { LegalService } from "../../../../progetto_shared/legalService.type";
 import { DraggableComponent } from "../draggable/draggable.component";
+import { DataService } from "../../services/data/data.service";
 
 @Component({
   selector: 'app-home',
@@ -22,10 +23,10 @@ export class HomeComponent implements OnInit {
 
   legalServices: LegalService[] = [];
 
-  constructor(private eventService: EventService) { }
+  constructor(private dataService: DataService) { }
 
   ngOnInit(): void {
-    this.eventService.getLegalServices().subscribe({
+    this.dataService.getLegalServices().subscribe({
       next: (legalServices) => {
         this.legalServices = legalServices;
       },
