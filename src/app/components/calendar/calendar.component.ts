@@ -2,6 +2,9 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from "@fullcalendar/angular";
 import { CalendarOptions, EventApi, EventClickArg } from "@fullcalendar/core";
 
+import { ContextMenu, ContextMenuModule } from "primeng/contextmenu";
+import { ConfirmDialogModule } from "primeng/confirmdialog";
+
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list';
@@ -12,9 +15,6 @@ import itLocale from '@fullcalendar/core/locales/it';
 import { ConfirmationService, MenuItem, MessageService } from "primeng/api";
 
 import { EventService } from "../../services/event/event.service";
-import { ContextMenu, ContextMenuModule } from "primeng/contextmenu";
-import { ToastModule } from "primeng/toast";
-import { ConfirmDialogModule } from "primeng/confirmdialog";
 
 @Component({
   selector: 'app-calendar',
@@ -22,7 +22,6 @@ import { ConfirmDialogModule } from "primeng/confirmdialog";
   imports: [
     FullCalendarModule,
     ContextMenuModule,
-    ToastModule,
     ConfirmDialogModule
   ],
   templateUrl: './calendar.component.html',
@@ -59,7 +58,7 @@ export class CalendarComponent implements OnInit {
       rejectIcon:"none",
       accept: () => {
         this.eventClickedOn?.remove();
-        this.messageService.add({ severity: 'info', summary: 'Confirmed', detail: 'Evento eliminato',  life: 3000 });
+        this.messageService.add({ severity: 'info', summary: 'Successo', detail: 'Evento eliminato',  life: 3000 });
       },
       reject: () => this.eventClickedOn = null
     });

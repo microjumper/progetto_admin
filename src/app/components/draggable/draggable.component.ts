@@ -14,6 +14,7 @@ import { Draggable } from "@fullcalendar/interaction";
 
 import { LegalService } from "../../../../progetto_shared/legalService.type";
 import { DataService } from "../../services/data/data.service";
+import { ConfirmationService, MessageService } from "primeng/api";
 
 @Component({
   selector: 'app-draggable',
@@ -43,7 +44,7 @@ export class DraggableComponent implements AfterViewInit {
   formDialogVisible: boolean = false;
   legalServiceForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder, private dataService: DataService) {
+  constructor(private formBuilder: FormBuilder, private dataService: DataService, private confirmationService: ConfirmationService, private messageService: MessageService) {
     this.legalServiceForm = this.formBuilder.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       duration: ['', [Validators.required, this.validateDuration]]
@@ -100,16 +101,27 @@ export class DraggableComponent implements AfterViewInit {
   }
 
   removeCheckedServices(): void {
-    this.dataService.deleteLegalServices(this.checkedLegalServices).subscribe({
-        next: (response: LegalService[]) => {
-          this.legalServices = this.legalServices.filter(service => !this.checkedLegalServices.includes(service.id));
-          this.checkedLegalServices = [];
-        },
-        error: (error) => {
-          console.error(error);
-        }
-      }
-    );
+    this.confirmationService.confirm({
+      message: 'Procedere con l\'eliminazione?',
+      header: 'Conferma Eliminazione',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon:"none",
+      rejectIcon:"none",
+      accept: () => {
+        this.dataService.deleteLegalServices(this.checkedLegalServices).subscribe({
+            next: (response: LegalService[]) => {
+              this.legalServices = this.legalServices.filter(service => !this.checkedLegalServices.includes(service.id));
+              this.checkedLegalServices = [];
+            },
+            error: (error) => {
+              console.error(error);
+            },
+            complete: () => this.messageService.add({ severity: 'info', summary: 'Successo', detail: 'Eliminazione avvenuta con successo',  life: 3000 })
+          }
+        );
+      },
+      reject: () => {}
+    });
   }
 
   showDialog(): void {
