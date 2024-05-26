@@ -1,5 +1,14 @@
 import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { NgForOf } from "@angular/common";
+import { NgForOf, NgIf } from "@angular/common";
+import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
+
+import { ButtonModule } from "primeng/button";
+import { DialogModule } from "primeng/dialog";
+import { FloatLabelModule } from "primeng/floatlabel";
+import { InputMaskModule } from "primeng/inputmask";
+import { InputTextModule } from "primeng/inputtext";
+import { RippleModule } from "primeng/ripple";
+import { CheckboxModule } from "primeng/checkbox";
 
 import { Draggable } from "@fullcalendar/interaction";
 
@@ -9,15 +18,38 @@ import { LegalService } from "../../../../progetto_shared/legalService.type";
   selector: 'app-draggable',
   standalone: true,
   imports: [
-    NgForOf
+    NgForOf,
+    ButtonModule,
+    DialogModule,
+    FloatLabelModule,
+    InputMaskModule,
+    InputTextModule,
+    NgIf,
+    ReactiveFormsModule,
+    RippleModule,
+    CheckboxModule,
+    FormsModule
   ],
   templateUrl: './draggable.component.html',
   styleUrl: './draggable.component.scss'
 })
 export class DraggableComponent implements AfterViewInit {
 
-  @Input() legalServices: LegalService[] | undefined;
+  @Input() legalServices: LegalService[] = [];
   @ViewChild('container', { static: true }) container: ElementRef | undefined;
+
+  checkedLegalServices: string[] = [];
+
+  formDialogVisible: boolean = false;
+  legalServiceForm: FormGroup;
+
+  constructor(private formBuilder: FormBuilder) {
+    this.legalServiceForm = this.formBuilder.group({
+      id: ['', [Validators.required, Validators.minLength(3)]],
+      title: ['', [Validators.required, Validators.minLength(3)]],
+      duration: ['', [Validators.required, this.validateDuration]]
+    });
+  }
 
   ngAfterViewInit() {
     const externalEvents = new Draggable(this.container?.nativeElement, {
@@ -48,5 +80,50 @@ export class DraggableComponent implements AfterViewInit {
       }
     }
     return JSON.stringify(eventData);
+  }
+
+  onSubmit(): void {
+    if (this.legalServiceForm.valid) {
+      const legalService: LegalService = {
+        id: this.legalServiceForm.value.id,
+        title: this.legalServiceForm.value.title,
+        duration: this.legalServiceForm.value.duration
+      };
+
+      this.legalServices.push(legalService);
+
+      this.hideDialog();
+    }
+  }
+
+  deleteCheckedServices(): void {
+    this.legalServices = this.legalServices.filter(service => !this.checkedLegalServices.includes(service.id));
+  }
+
+  showDialog(): void {
+    this.formDialogVisible = true;
+  }
+
+  private hideDialog(): void {
+    this.formDialogVisible = false;
+  }
+
+  private validateDuration(control: FormControl) {
+    const value = control.value;
+    if (!value) {
+      return { invalidDuration: true };
+    }
+
+    const [hours, minutes] = value.split(':').map(Number);
+    if (isNaN(hours) || isNaN(minutes)) {
+      return { invalidNumber: true };
+    }
+
+    const totalMinutes = hours * 60 + minutes;
+    if (totalMinutes < 30) {
+      return { invalidDuration: true };
+    }
+
+    return null;
   }
 }

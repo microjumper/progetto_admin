@@ -1,23 +1,66 @@
+h2 {
+  margin: 0 auto;
+  padding: 16px 0;
+}
+
+.buttons-container {
+  margin: 16px 0;
+
+  display: flex;
+  justify-content: space-between;
+}
+
 #fc-event-container {
-  padding: 8px 0;
   display: flex;
   flex-flow: column nowrap;
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: stretch;
   gap: 8px;
   border-radius: 3px;
 }
 
+.draggable-container {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: stretch;
+  align-items: center;
+
+  p-checkbox {
+    flex: 1;
+  }
+}
+
 .fc-event {
+  flex: 9;
   padding: 4px 8px;
-  height: 24px;
+  height: 37px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: stretch;
   background-color: #3788d8;
   color: #fff;
   border: none;
   border-radius: 3px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+
+  p {
+    margin: 0;
+    font-weight: 400;
+  }
 }
 
 .fc-event:hover {
   background-color: rgba(55, 136, 216, 0.8);
+}
+
+.form-container {
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-around;
+  align-items: stretch;
 }

@@ -1,3 +1,50 @@
+<h2>Servizi Legali</h2>
+
+<div class="buttons-container">
+  <button [disabled]="checkedLegalServices.length === 0" pButton pRipple class="p-button-danger" icon="pi pi-trash" size="small"
+          #deleteButton (click)="deleteCheckedServices(); deleteButton.blur()" raised="true"></button>
+
+  <button pButton pRipple icon="pi pi-plus" size="small" #addButton (click)="showDialog(); addButton.blur()" raised="true"></button>
+</div>
+
 <div id="fc-event-container" #container>
-  <div class="fc-event" *ngFor="let service of legalServices" [attr.data-event]=createStringifiedEventData(service)>{{ service.title }}</div>
+  <div class="draggable-container" *ngFor="let service of legalServices">
+    <p-checkbox [(ngModel)]="checkedLegalServices" name="checkedLegalServices" #checkbox [value]="service.id"/>
+    <div class="fc-event p-button p-button-raised" [attr.data-event]=createStringifiedEventData(service)>
+      <p>{{ service.title }}</p>
+    </div>
+  </div>
+</div>
+
+<div class="card flex justify-content-center">
+  <p-dialog header="Nuovo Servizio Legale" modal="true" [(visible)]="formDialogVisible" closeOnEscape="true"
+            dismissableMask="true" [style]="{ width: '25rem', height: '25rem' }" (onHide)="legalServiceForm.reset()">
+    <form [formGroup]="legalServiceForm" (ngSubmit)="onSubmit()" class="form-container">
+      <div class="p-field">
+        <p-floatLabel>
+          <input id="id" type="text" pInputText formControlName="id">
+          <label for="id">ID</label>
+        </p-floatLabel>
+      </div>
+
+      <div class="p-field">
+        <p-floatLabel>
+          <input id="title" type="text" pInputText formControlName="title">
+          <label for="title">Titolo</label>
+        </p-floatLabel>
+      </div>
+
+      <div class="p-field">
+        <p-floatLabel>
+          <p-inputMask id="duration" mask="99:99" formControlName="duration" placeholder="00:00" />
+          <label for="duration">Durata</label>
+        </p-floatLabel>
+        <small *ngIf="legalServiceForm.controls['duration']?.invalid" style="color: #d32f2f">
+          {{ 'Durata minima: 30 minuti' }}
+        </small>
+      </div>
+
+      <button [disabled]="legalServiceForm.invalid" pButton type="submit" label="Conferma"></button>
+    </form>
+  </p-dialog>
 </div>
