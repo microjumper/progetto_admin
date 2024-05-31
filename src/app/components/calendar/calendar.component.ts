@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FullCalendarComponent, FullCalendarModule } from "@fullcalendar/angular";
 import { CalendarOptions, EventApi, EventClickArg } from "@fullcalendar/core";
 
@@ -34,8 +34,7 @@ export class CalendarComponent implements OnInit {
 
   calendarOptions: CalendarOptions | undefined;
   contextMenuItems: MenuItem[] = [
-    { label: 'Edit', icon: 'pi pi-pencil', command: () => this.editEvent() },
-    { label: 'Delete', icon: 'pi pi-trash', command: () => this.deleteEvent() }
+    { label: 'Elimina', icon: 'pi pi-trash', command: () => this.deleteEvent() }
   ];
   eventClickedOn: EventApi | null = null;
 
@@ -43,25 +42,6 @@ export class CalendarComponent implements OnInit {
 
   ngOnInit(): void {
     this.initCalendar();
-  }
-
-  private editEvent() {
-    console.log("Edit event");
-  }
-
-  private deleteEvent() {
-    this.confirmationService.confirm({
-      message: 'Procedere con l\'eliminazione?',
-      header: 'Conferma Eliminazione',
-      icon: 'pi pi-exclamation-triangle',
-      acceptIcon:"none",
-      rejectIcon:"none",
-      accept: () => {
-        this.eventClickedOn?.remove();
-        this.messageService.add({ severity: 'info', summary: 'Successo', detail: 'Evento eliminato',  life: 3000 });
-      },
-      reject: () => this.eventClickedOn = null
-    });
   }
 
   private initCalendar(): void {
@@ -112,10 +92,6 @@ export class CalendarComponent implements OnInit {
   private handleClick(clickInfo: EventClickArg) {
     clickInfo.jsEvent.preventDefault();
 
-    if (clickInfo.event.url) {
-      window.open(clickInfo.event.url);
-    }
-
     this.eventClickedOn = clickInfo.event;
     this.contextMenu?.show(clickInfo.jsEvent);
   }
@@ -147,5 +123,27 @@ export class CalendarComponent implements OnInit {
     console.log(eventDropInfo.event)
 
     // update event in database
+  }
+
+  private deleteEvent() {
+    this.confirmationService.confirm({
+      message: 'Procedere con l\'eliminazione?',
+      header: 'Conferma eliminazione evento',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon:"none",
+      rejectIcon:"none",
+      accept: () => {
+        if(this.eventClickedOn?.id) {
+          this.eventService.deleteEvent(this.eventClickedOn.id).subscribe({
+            next: (response) => {
+              this.eventClickedOn?.remove();
+              this.messageService.add({ severity: 'success', summary: 'Operazione completata', detail: 'Evento eliminato',  life: 3000 });
+            },
+            error: (error) => console.error(error.message)
+          });
+        }
+      },
+      reject: () => this.eventClickedOn = null
+    });
   }
 }

@@ -22,4 +22,9 @@ export class EventService {
   {
     return this.httpClient.put<EventApi>('', event);
   }
+
+  deleteEvent(id: string): Observable<EventApi>
+  {
+    return this.httpClient.delete<EventApi>(`http://localhost:7071/api/events/delete/${id}`);
+  }
 }
