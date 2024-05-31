@@ -5,7 +5,6 @@ import { Observable } from "rxjs";
 
 import { EventApi } from "@fullcalendar/core";
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +19,7 @@ export class EventService {
 
   updateEvent(event: EventApi): Observable<EventApi>
   {
-    return this.httpClient.put<EventApi>('', event);
+    return this.httpClient.put<EventApi>(` http://localhost:7071/api/events/update/${event.id}`, event);
   }
 
   deleteEvent(id: string): Observable<EventApi>

@@ -1,18 +1,18 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { FullCalendarComponent, FullCalendarModule } from "@fullcalendar/angular";
-import { CalendarOptions, EventApi, EventClickArg } from "@fullcalendar/core";
 
 import { ContextMenu, ContextMenuModule } from "primeng/contextmenu";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
+import { ConfirmationService, MenuItem, MessageService } from "primeng/api";
+
+import { FullCalendarComponent, FullCalendarModule } from "@fullcalendar/angular";
+import { CalendarOptions, EventApi, EventClickArg } from "@fullcalendar/core";
+import interactionPlugin, { EventReceiveArg } from '@fullcalendar/interaction';
 
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list';
-import interactionPlugin, { EventReceiveArg } from '@fullcalendar/interaction';
 
 import itLocale from '@fullcalendar/core/locales/it';
-
-import { ConfirmationService, MenuItem, MessageService } from "primeng/api";
 
 import { EventService } from "../../services/event/event.service";
 
@@ -83,10 +83,9 @@ export class CalendarComponent implements OnInit {
         }
         return eventData
       },
-      eventClick: clickInfo => this.handleClick(clickInfo),
-      eventsSet: events => this.handleSet(events),
-      eventReceive: info => this.handleReceive(info),
-      eventDrop: eventDropInfo => this.handleDrop(eventDropInfo),
+      eventClick: clickInfo => this.handleClick(clickInfo), // click on an event
+      eventReceive: info => this.handleReceive(info), // drag and drop an external event
+      eventDrop: eventDropInfo => this.handleDrop(eventDropInfo), // event update after dragging it
     };
   }
 
@@ -95,18 +94,6 @@ export class CalendarComponent implements OnInit {
 
     this.eventClickedOn = clickInfo.event;
     this.contextMenu?.show(clickInfo.jsEvent);
-  }
-
-  private handleSet(events: EventApi[]) {
-/*    console.log(events);
-
-    events.forEach((event) => {
-      const startDate = event.start;
-      const endDate = event.end;
-
-      console.log("Event start date:", startDate);
-      console.log("Event end date:", endDate);
-    });*/
   }
 
   private handleReceive(info: EventReceiveArg): void
@@ -135,9 +122,24 @@ export class CalendarComponent implements OnInit {
 
   private handleDrop(eventDropInfo: any): void
   {
-    console.log(eventDropInfo.event)
+    const event = eventDropInfo.event;
 
-    // update event in database
+    this.confirmationService.confirm({
+      message: 'Procedere con le modifiche?',
+      header: 'Conferma modifica evento',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon:"none",
+      rejectIcon:"none",
+      accept: () => {
+        this.eventService.updateEvent(event).subscribe({
+          next: (response) => {
+            this.messageService.add({ severity: 'success', summary: 'Operazione completata', detail: 'Evento modificato', life: 3000 });
+          },
+          error: (error) => console.error(error.message)
+        })
+      },
+      reject: () => eventDropInfo.revert()
+    });
   }
 
   private deleteEvent() {
