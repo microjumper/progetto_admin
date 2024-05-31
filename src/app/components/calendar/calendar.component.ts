@@ -73,6 +73,7 @@ export class CalendarComponent implements OnInit {
           duration: { weeks: 1 }
         }
       },
+      lazyFetching: true,
       events: 'http://localhost:7071/api/events/all',
       eventDataTransform: eventData => {
         for (let prop in eventData) {
@@ -112,10 +113,24 @@ export class CalendarComponent implements OnInit {
   {
     const event = info.event;
 
-    this.eventService.addEvent(event).subscribe(
-      (response) => {
-        console.log(response);
-      })
+    this.confirmationService.confirm({
+      message: 'Aggiungere l\'evento al calendario?',
+      header: 'Conferma aggiunta evento',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon:"none",
+      rejectIcon:"none",
+      accept: () => {
+        this.eventService.addEvent(event).subscribe({
+          next: (response) => {
+            event.remove();
+            this.calendarComponent?.getApi().refetchEvents();
+            this.messageService.add({ severity: 'success', summary: 'Operazione completata', detail: 'Evento aggiunto', life: 3000 });
+          },
+          error: (error) => console.error(error.message)
+        })
+      },
+      reject: () => info.revert()
+    });
   }
 
   private handleDrop(eventDropInfo: any): void
