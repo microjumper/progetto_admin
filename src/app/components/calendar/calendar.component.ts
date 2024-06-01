@@ -5,7 +5,7 @@ import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { ConfirmationService, MenuItem, MessageService } from "primeng/api";
 
 import { FullCalendarComponent, FullCalendarModule } from "@fullcalendar/angular";
-import { CalendarOptions, EventApi, EventClickArg } from "@fullcalendar/core";
+import { CalendarOptions, EventApi, EventClickArg, EventInput } from "@fullcalendar/core";
 import interactionPlugin, { EventReceiveArg } from '@fullcalendar/interaction';
 
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -109,11 +109,14 @@ export class CalendarComponent implements OnInit {
       accept: () => {
         this.eventService.addEvent(event).subscribe({
           next: (response) => {
-            event.remove();
+            event.remove(); // remove draggable
             this.calendarComponent?.getApi().refetchEvents();
             this.messageService.add({ severity: 'success', summary: 'Operazione completata', detail: 'Evento aggiunto', life: 3000 });
           },
-          error: (error) => console.error(error.message)
+          error: (error) => {
+            event.remove(); // revert
+            console.error(error.message);
+          }
         })
       },
       reject: () => info.revert()
