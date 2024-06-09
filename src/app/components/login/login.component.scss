@@ -1,0 +1,16 @@
+.container {
+  height: 100vh;
+
+  background-image: linear-gradient(to right top, #c5c5c5, #d2d2d2, #dfdfdf, #ededed, #fafafa);
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+
+  p-card {
+    max-width: 480px;
+  }
+}
