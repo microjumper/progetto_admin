@@ -15,6 +15,9 @@ import listPlugin from '@fullcalendar/list';
 import itLocale from '@fullcalendar/core/locales/it';
 
 import { EventService } from "../../services/event/event.service";
+import { AppointmentService } from "../../services/appointment/appointment.service";
+import { Appointment } from "../../../../progetto_shared/appointment.type";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-calendar',
@@ -34,11 +37,13 @@ export class CalendarComponent implements OnInit {
 
   calendarOptions: CalendarOptions | undefined;
   contextMenuItems: MenuItem[] = [
+    { label: 'Dettagli', icon: 'pi pi-info-circle', command: () => this.displayInfo(), disabled: true },
     { label: 'Elimina', icon: 'pi pi-trash', command: () => this.deleteEvent(), disabled: false }
   ];
-  eventClickedOn: EventApi | null = null;
 
-  constructor(private eventService: EventService, private confirmationService: ConfirmationService, private messageService: MessageService) { }
+  private eventClickedOn: EventApi | null = null;
+
+  constructor(private eventService: EventService, private confirmationService: ConfirmationService, private messageService: MessageService, private appointmentService: AppointmentService) { }
 
   ngOnInit(): void {
     this.initCalendar();
@@ -94,8 +99,11 @@ export class CalendarComponent implements OnInit {
 
     this.eventClickedOn = clickInfo.event;
 
+    const isBooked: boolean = this.eventClickedOn.extendedProps["appointment"] !== undefined;
     // if there's an appointment, admin can't delete the event
-    this.contextMenuItems[0].disabled = this.eventClickedOn.extendedProps["appointment"] !== undefined;
+    this.contextMenuItems[1].disabled = isBooked;
+    // if there's an appointment, admin can display appointment info
+    this.contextMenuItems[0].disabled = !isBooked;
 
     this.contextMenu?.show(clickInfo.jsEvent);
   }
@@ -140,7 +148,7 @@ export class CalendarComponent implements OnInit {
       accept: () => {
         this.eventService.updateEvent(event).subscribe({
           next: (response) => {
-            this.messageService.add({ severity: 'success', summary: 'Operazione completata', detail: 'Evento modificato', life: 3000 });
+            this.messageService.add({ severity: 'success', summary: 'Operazione completata', detail: 'Evento modificato', life: 1500 });
           },
           error: (error) => console.error(error.message)
         })
@@ -161,13 +169,23 @@ export class CalendarComponent implements OnInit {
           this.eventService.deleteEvent(this.eventClickedOn.id).subscribe({
             next: (response) => {
               this.eventClickedOn?.remove();
-              this.messageService.add({ severity: 'success', summary: 'Operazione completata', detail: 'Evento eliminato',  life: 3000 });
+              this.messageService.add({ severity: 'success', summary: 'Operazione completata', detail: 'Evento eliminato',  life: 1500 });
             },
             error: (error) => console.error(error.message)
           });
         }
       },
       reject: () => this.eventClickedOn = null
+    });
+  }
+
+  private displayInfo(): void
+  {
+    const id = this.eventClickedOn?.extendedProps["appointment"];
+    const subscription: Subscription = this.appointmentService.getAppointmentById(id).subscribe({
+      next: (appointment: Appointment) => console.log(appointment),
+      error: error => console.log(error.message),
+      complete: () => subscription.unsubscribe()
     });
   }
 }
