@@ -1,23 +1,24 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { DatePipe, NgForOf, NgIf } from "@angular/common";
 
 import { ContextMenu, ContextMenuModule } from "primeng/contextmenu";
 import { ConfirmDialogModule } from "primeng/confirmdialog";
 import { ConfirmationService, MenuItem, MessageService } from "primeng/api";
+import { Dialog, DialogModule } from "primeng/dialog";
 
 import { FullCalendarComponent, FullCalendarModule } from "@fullcalendar/angular";
-import { CalendarOptions, EventApi, EventClickArg, EventInput } from "@fullcalendar/core";
+import { CalendarOptions, EventApi, EventClickArg } from "@fullcalendar/core";
 import interactionPlugin, { EventReceiveArg } from '@fullcalendar/interaction';
-
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list';
-
 import itLocale from '@fullcalendar/core/locales/it';
+
+import { Subscription } from "rxjs";
 
 import { EventService } from "../../services/event/event.service";
 import { AppointmentService } from "../../services/appointment/appointment.service";
 import { Appointment } from "../../../../progetto_shared/appointment.type";
-import { Subscription } from "rxjs";
 
 @Component({
   selector: 'app-calendar',
@@ -25,7 +26,11 @@ import { Subscription } from "rxjs";
   imports: [
     FullCalendarModule,
     ContextMenuModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    DialogModule,
+    NgIf,
+    NgForOf,
+    DatePipe
   ],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.scss'
@@ -34,12 +39,15 @@ export class CalendarComponent implements OnInit {
 
   @ViewChild(FullCalendarComponent) calendarComponent: FullCalendarComponent | undefined;
   @ViewChild(ContextMenu) contextMenu: ContextMenu | undefined;
+  @ViewChild(Dialog) dialog: Dialog | undefined
 
   calendarOptions: CalendarOptions | undefined;
   contextMenuItems: MenuItem[] = [
     { label: 'Dettagli', icon: 'pi pi-info-circle', command: () => this.displayInfo(), disabled: true },
     { label: 'Elimina', icon: 'pi pi-trash', command: () => this.deleteEvent(), disabled: false }
   ];
+  dialogVisible: boolean = false;
+  appointment: Appointment | undefined;
 
   private eventClickedOn: EventApi | null = null;
 
@@ -183,9 +191,15 @@ export class CalendarComponent implements OnInit {
   {
     const id = this.eventClickedOn?.extendedProps["appointment"];
     const subscription: Subscription = this.appointmentService.getAppointmentById(id).subscribe({
-      next: (appointment: Appointment) => console.log(appointment),
+      next: (appointment: Appointment) => this.appointment = appointment,
       error: error => console.log(error.message),
       complete: () => subscription.unsubscribe()
     });
+
+    this.dialogVisible = true;
+  }
+
+  onHide(): void {
+    this.appointment = undefined;
   }
 }

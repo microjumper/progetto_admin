@@ -1,2 +1,21 @@
 <full-calendar [options]="calendarOptions"></full-calendar>
+
 <p-contextMenu [model]="contextMenuItems"></p-contextMenu>
+
+<p-dialog resizable="false" dismissableMask="true" [modal]="true" [(visible)]="dialogVisible" (onHide)="onHide()">
+  <ng-template pTemplate="header">
+    <div class="dialog-title">Dettagli Appuntamento</div>
+  </ng-template>
+  <div class="dialog-container">
+    <div class="detail-label">Servizio legale:</div>
+    <div class="detail-value">{{ appointment?.legalServiceTitle }}</div>
+    <div class="detail-label">Data:</div>
+    <div class="detail-value">{{ appointment?.eventDate | date: 'fullDate':'':'it-IT'}}</div>
+    <div class="detail-label">Recapito cliente:</div>
+    <div class="detail-value">{{ appointment?.accountId }}</div>
+    <div class="detail-label" *ngIf="appointment?.fileMetadata?.length">File Allegati:</div>
+    <div class="detail-value" *ngFor="let file of appointment?.fileMetadata">
+      <a href="{{ file.fileUrl }}" target="_blank">{{ file.originalFileName }}</a>
+    </div>
+  </div>
+</p-dialog>
