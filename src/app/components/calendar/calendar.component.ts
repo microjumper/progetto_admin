@@ -34,7 +34,7 @@ export class CalendarComponent implements OnInit {
 
   calendarOptions: CalendarOptions | undefined;
   contextMenuItems: MenuItem[] = [
-    { label: 'Elimina', icon: 'pi pi-trash', command: () => this.deleteEvent() }
+    { label: 'Elimina', icon: 'pi pi-trash', command: () => this.deleteEvent(), disabled: false }
   ];
   eventClickedOn: EventApi | null = null;
 
@@ -74,7 +74,7 @@ export class CalendarComponent implements OnInit {
         }
       },
       lazyFetching: true,
-      events: 'http://localhost:7071/api/events/all',
+      events: 'http://localhost:7071/api/events',
       eventDataTransform: eventData => {
         for (let prop in eventData) {
           if (eventData[prop] === null) {
@@ -93,6 +93,10 @@ export class CalendarComponent implements OnInit {
     clickInfo.jsEvent.preventDefault();
 
     this.eventClickedOn = clickInfo.event;
+
+    // if there's an appointment, admin can't delete the event
+    this.contextMenuItems[0].disabled = this.eventClickedOn.extendedProps["appointment"] !== undefined;
+
     this.contextMenu?.show(clickInfo.jsEvent);
   }
 
@@ -111,7 +115,7 @@ export class CalendarComponent implements OnInit {
           next: (response) => {
             event.remove(); // remove draggable
             this.calendarComponent?.getApi().refetchEvents();
-            this.messageService.add({ severity: 'success', summary: 'Operazione completata', detail: 'Evento aggiunto', life: 3000 });
+            this.messageService.add({ severity: 'success', summary: 'Operazione completata', detail: 'Evento aggiunto al calendario', life: 1500 });
           },
           error: (error) => {
             event.remove(); // revert
