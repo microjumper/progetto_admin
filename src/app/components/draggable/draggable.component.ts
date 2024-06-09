@@ -116,7 +116,7 @@ export class DraggableComponent implements AfterViewInit {
             error: (error) => {
               console.error(error);
             },
-            complete: () => this.messageService.add({ severity: 'info', summary: 'Successo', detail: 'Eliminazione avvenuta con successo',  life: 3000 })
+            complete: () => this.messageService.add({ severity: 'success', summary: 'Eliminazione completata', detail: 'Eliminazione avvenuta con successo',  life: 1500 })
           }
         );
       },
