@@ -14,7 +14,7 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list';
 import itLocale from '@fullcalendar/core/locales/it';
 
-import { Subscription } from "rxjs";
+import { firstValueFrom, Subscription } from "rxjs";
 
 import { EventService } from "../../services/event/event.service";
 import { AppointmentService } from "../../services/appointment/appointment.service";
@@ -62,7 +62,7 @@ export class CalendarComponent implements OnInit {
       locale: itLocale,
       initialView: 'timeGridDay',
       nowIndicator: true,
-      selectable: true,
+      selectable: false,
       editable: true,
       droppable: true,
       allDaySlot: false,
@@ -116,9 +116,19 @@ export class CalendarComponent implements OnInit {
     this.contextMenu?.show(clickInfo.jsEvent);
   }
 
-  private handleReceive(info: EventReceiveArg): void
+  private async handleReceive(info: EventReceiveArg): Promise<void>
   {
     const event = info.event;
+
+    if(await this.isDatePassed(event)) {
+      event.remove();
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Operazione annullata',
+        detail: 'Impossibile associare un servizio ad una data passata', life: 3000
+      });
+      return;
+    }
 
     this.confirmationService.confirm({
       message: 'Aggiungere l\'evento al calendario?',
@@ -143,9 +153,19 @@ export class CalendarComponent implements OnInit {
     });
   }
 
-  private handleDrop(eventDropInfo: any): void
+  private async handleDrop(eventDropInfo: any): Promise<void>
   {
     const event = eventDropInfo.event;
+
+    if(await this.isDatePassed(event)) {
+      eventDropInfo.revert();
+      this.messageService.add({
+          severity: 'error',
+          summary: 'Operazione annullata',
+          detail: 'Impossibile modificare un servizio associato ad una data passata', life: 3000
+        });
+      return;
+    }
 
     this.confirmationService.confirm({
       message: 'Procedere con le modifiche?',
@@ -201,5 +221,14 @@ export class CalendarComponent implements OnInit {
 
   onHide(): void {
     this.appointment = undefined;
+  }
+
+  private async isDatePassed(event: EventApi): Promise<boolean> {
+    const eventDate = event.start!;
+
+    const response = await firstValueFrom(this.appointmentService.getDate());
+    const currentDate = new Date(response.dateISO);
+
+    return eventDate < currentDate
   }
 }

@@ -12,6 +12,11 @@ export class AppointmentService {
 
   constructor(private httpClient: HttpClient) { }
 
+  public getDate(): Observable<{ dateISO: string }>
+  {
+    return this.httpClient.get<{ dateISO: string }>(`http://localhost:7071/api/date`);
+  }
+
   public getAppointmentById(id: string): Observable<Appointment>
   {
     return this.httpClient.get<Appointment>(`http://localhost:7071/api/appointments/${id}`);
