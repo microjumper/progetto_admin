@@ -61,6 +61,8 @@ export class CalendarComponent implements OnInit {
     this.calendarOptions = {
       locale: itLocale,
       initialView: 'timeGridDay',
+      slotMinTime: '08:30',
+      slotMaxTime: '18:30',
       nowIndicator: true,
       selectable: false,
       editable: true,
