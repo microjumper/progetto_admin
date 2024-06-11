@@ -1,3 +1,39 @@
+.brand {
+  margin: 0;
+
+  font-family: 'Lora', serif;
+  font-size: 1.75rem;
+  font-weight: 400;
+
+  letter-spacing: 3px;
+
+  text-align: center;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  user-select: none;
+}
+
+.container {
+  display: flex;
+}
+
+.sidebar {
+  margin: 8px;
+  padding: 16px;
+
+  width: 320px;
+
+  background-color: #fafafa;
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 .content {
-  margin: 8px 8px 8px 328px;
+  margin: 8px;
+  padding: 16px;
+
+  flex: 1; /* Takes the remaining space */
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

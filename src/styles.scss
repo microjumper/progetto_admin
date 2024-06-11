@@ -2,10 +2,20 @@
 @import "primeng/resources/primeng.css";
 @import "primeicons/primeicons.css";
 
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@400;500&display=swap');
+
 body {
   margin: 0;
 
   font-family: 'Roboto', sans-serif;
+
+  height: 100%;
+}
+
+.p-toolbar {
+  margin-bottom: 16px;
+
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.02), 0 0 2px rgba(0, 0, 0, 0.05), 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 
 .fc-event { // calendar events
@@ -14,4 +24,8 @@ body {
 
 .p-inputtext {
   width: 100%;
+}
+
+.p-menu { // toolbar menu
+  width: 250px;
 }

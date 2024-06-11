@@ -1,7 +1,17 @@
+<p-toolbar>
+  <div class="p-toolbar-group-start">
+    <p class="brand" routerLink="">Studio Legale</p>
+  </div>
+  <div class="p-toolbar-group-end">
+    <p-menu #menu [model]="items" [popup]="true"></p-menu>
+    <button pButton type="button" (click)="menu.toggle($event)" icon="pi pi-user" raised="true"></button>
+  </div>
+</p-toolbar>
+
 <div class="container">
-  <p-sidebar class="sidebar" [visible]="true" [modal]="false" [showCloseIcon]="false">
+  <div class="sidebar">
     <app-draggable [legalServices]="legalServices"></app-draggable>
-  </p-sidebar>
+  </div>
 
   <div class="content">
     <app-calendar></app-calendar>
