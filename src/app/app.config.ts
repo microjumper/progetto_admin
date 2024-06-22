@@ -18,8 +18,6 @@ import {
 } from "@azure/msal-angular";
 
 import { routes } from './app.routes';
-import { environment } from "../environments/environment";
-
 
 registerLocaleData(localeIt);
 
@@ -62,7 +60,7 @@ export const appConfig: ApplicationConfig = {
 function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
     auth: {
-      clientId: environment.clientId,
+      clientId: process.env['CLIENT_ID']!,
       redirectUri: '/',
       postLogoutRedirectUri: '/login'
     },
