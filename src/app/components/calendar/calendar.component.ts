@@ -127,7 +127,7 @@ export class CalendarComponent implements OnInit {
       this.messageService.add({
         severity: 'error',
         summary: 'Operazione annullata',
-        detail: 'Impossibile associare un servizio ad una data passata', life: 3000
+        detail: 'Impossibile associare un servizio ad una data passata', life: 1500
       });
       return;
     }
@@ -139,16 +139,22 @@ export class CalendarComponent implements OnInit {
       acceptIcon:"none",
       rejectIcon:"none",
       accept: () => {
-        this.eventService.addEvent(event).subscribe({
+        if(this.calendarComponent?.getApi()?.view.type === 'dayGridMonth') { // event dropped on a month view
+          event.setDates(event.start!, event.end!);
+          event.moveDates('08:30'); // avoid the event to be set at midnight
+        }
+
+        const subscription: Subscription = this.eventService.addEvent(event).subscribe({
           next: (response) => {
             event.remove(); // remove draggable
-            this.calendarComponent?.getApi().refetchEvents();
+            this.calendarComponent?.getApi()?.refetchEvents();
             this.messageService.add({ severity: 'success', summary: 'Operazione completata', detail: 'Evento aggiunto al calendario', life: 1500 });
           },
           error: (error) => {
             event.remove(); // revert
             console.error(error.message);
-          }
+          },
+          complete: () => subscription.unsubscribe()
         })
       },
       reject: () => info.revert()
