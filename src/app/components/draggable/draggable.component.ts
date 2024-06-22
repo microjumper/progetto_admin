@@ -12,6 +12,8 @@ import { CheckboxModule } from "primeng/checkbox";
 
 import { Draggable } from "@fullcalendar/interaction";
 
+import { Subscription } from "rxjs";
+
 import { LegalService } from "../../../../progetto_shared/legalService.type";
 import { DataService } from "../../services/data/data.service";
 import { ConfirmationService, MessageService } from "primeng/api";
@@ -90,11 +92,11 @@ export class DraggableComponent implements AfterViewInit {
         duration: this.legalServiceForm.value.duration
       };
 
-      this.dataService.addLegalService(legalService).subscribe(
-        (response: LegalService) => {
-          this.legalServices.push(response)
-        }
-      );
+      const subscription: Subscription = this.dataService.addLegalService(legalService).subscribe({
+        next: (response: LegalService) => this.legalServices.push(response),
+        error: error => console.error(error),
+        complete: () => subscription.unsubscribe()
+      });
 
       this.hideDialog();
     }
@@ -108,7 +110,7 @@ export class DraggableComponent implements AfterViewInit {
       acceptIcon:"none",
       rejectIcon:"none",
       accept: () => {
-        this.dataService.deleteLegalServices(this.checkedLegalServices).subscribe({
+        const subscription: Subscription = this.dataService.deleteLegalServices(this.checkedLegalServices).subscribe({
             next: (response: LegalService[]) => {
               this.legalServices = this.legalServices.filter(service => !this.checkedLegalServices.includes(service.id));
               this.checkedLegalServices = [];
@@ -116,7 +118,11 @@ export class DraggableComponent implements AfterViewInit {
             error: (error) => {
               console.error(error);
             },
-            complete: () => this.messageService.add({ severity: 'success', summary: 'Eliminazione completata', detail: 'Eliminazione avvenuta con successo',  life: 1500 })
+            complete: () => {
+              this.messageService.add({ severity: 'success', summary: 'Eliminazione completata', detail: 'Eliminazione avvenuta con successo',  life: 1500 });
+
+              subscription.unsubscribe();
+            }
           }
         );
       },
