@@ -89,15 +89,8 @@ export class CalendarComponent implements OnInit {
         }
       },
       lazyFetching: true,
-      events: 'http://localhost:7071/api/events',
-      eventDataTransform: eventData => {
-        for (let prop in eventData) {
-          if (eventData[prop] === null) {
-            delete eventData[prop];
-          }
-        }
-        return eventData
-      },
+      events: window.location.hostname === "localhost" ? 'http://localhost:7071/api/events' :
+        `https://appointment-scheduler.azurewebsites.net/api/events?code=${process.env['GET_EVENTS_CODE']}`,
       eventClick: clickInfo => this.handleClick(clickInfo), // click on an event
       eventReceive: info => this.handleReceive(info), // drag and drop an external event
       eventDrop: eventDropInfo => this.handleDrop(eventDropInfo), // event update after dragging it
@@ -170,7 +163,7 @@ export class CalendarComponent implements OnInit {
       this.messageService.add({
           severity: 'error',
           summary: 'Operazione annullata',
-          detail: 'Impossibile modificare un servizio associato ad una data passata', life: 3000
+          detail: 'Impossibile modificare un servizio associato ad una data passata', life: 1500
         });
       return;
     }
