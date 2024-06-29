@@ -1,0 +1,22 @@
+<div>
+  <table class="styled-table waiting-list">
+    <thead>
+    <tr>
+      <th>Servizio legale</th>
+      <th>Cliente</th>
+      <th>Allegati</th>
+      <th>In lista da</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let entity of waitingList">
+      <td>{{ entity.appointment.legalServiceTitle }}</td>
+      <td>{{ entity.appointment.user?.email }}</td>
+      <td class="file-column">
+        <p *ngFor="let file of entity.appointment.fileMetadata">{{ file.originalFileName }}</p>
+      </td>
+      <td>{{ entity.addedOn | date: 'EEEE d MMMM y' }}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

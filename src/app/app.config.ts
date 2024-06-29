@@ -6,6 +6,7 @@ import { DatePipe, registerLocaleData } from "@angular/common";
 import localeIt from '@angular/common/locales/it';
 
 import { ConfirmationService, MessageService } from "primeng/api";
+import { DialogService } from "primeng/dynamicdialog";
 
 import { IPublicClientApplication, PublicClientApplication, BrowserCacheLocation, InteractionType } from "@azure/msal-browser";
 import {
@@ -53,7 +54,8 @@ export const appConfig: ApplicationConfig = {
     MsalGuard,
     MsalBroadcastService,
     ConfirmationService,
-    MessageService
+    MessageService,
+    DialogService
   ]
 };
 
